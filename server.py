@@ -14,6 +14,10 @@ def generate():
 
     return jsonify({"response": f"Your query was: {prompt}"})
 
-# Vercel requires this for deployment
-def handler(event, context):
-    return app(event, context)
+# Vercel requires this to wrap Flask in a handler for serverless deployment
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+# Vercel uses "server.py" instead of "app.py"
+if __name__ == "__main__":
+    app.run(debug=True)
